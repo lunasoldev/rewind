@@ -1,0 +1,9 @@
+[package]
+name = "rustproject"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+zip-extract = "0.2.1"
+flate2 = "1.0.35"
+tar = "0.4.43"
