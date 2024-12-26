@@ -23,11 +23,9 @@ fn main() {
     let filename: &str = filename
         .expect("Error: Please specify a file!");
 
-    //let extension = filename.split('.').collect::<Vec<&str>>()[1..].join(".");
-    
     match get_file_type(filename) {
         Some("zip") => extract_zip(filename),
-        Some("tar.gz") => extract_tarball(filename).expect("Failed to unzip tar.gz file"),
+        Some("tar.gz") => extract_tarball(filename).expect("Failed to extract tar.gz file"),
         _ => {
             eprintln!("Error: Unsupported filetype. Aborting...");
             std::process::exit(1);
@@ -50,7 +48,17 @@ fn extract_zip(filename: &str) {
 
     let output_dir = Path::new("data");
 
-    let zip_content = std::fs::read(filename).expect("Failed to read zip file");
+    let zip_content = std::fs::read(filename);
+
+    match zip_content {
+        Ok(content) => {
+            extract(std::io::Cursor::new(content), &output_dir, true).expect("Failed to extract zip file");
+            println!("Successfully extracted {}, continuing...", filename);
+        },
+        Err(e) => {
+            eprintln!("Error reading zip content: {}", e);
+        }
+    }
 }
 
 fn extract_tarball(filename: &str) -> Result<(), std::io::Error> {
